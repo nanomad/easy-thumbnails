@@ -8,3 +8,8 @@ docs/_build
 *.pyc
 reports/*
 .python-version
+**/local_settings.py
+/.project
+/.pydevproject
+/.settings
+/.vscode

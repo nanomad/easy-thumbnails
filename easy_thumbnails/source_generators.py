@@ -34,19 +34,3 @@ def pil_image(source, exif_orientation=True, **options):
     if exif_orientation:
         image = utils.exif_orientation(image)
     return image
-
-
-def vil_image(source, **options):
-    """
-    Try to open the source file directly using VIL, ignoring any errors.
-    """
-    from easy_thumbnails.VIL import Image
-
-    if not source:
-        return
-    # path method should not be implemented for remote storages. We can pass the file directly.
-    # filename = source.source_storage.path(source.file.name)
-    try:
-        return Image.load(source.file)
-    except Exception as exc:
-        raise exc

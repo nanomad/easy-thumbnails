@@ -2,9 +2,8 @@ import hashlib
 import inspect
 import math
 
-from django.utils import timezone
-from django.utils.functional import LazyObject
-from django.utils.module_loading import import_string
+from .django_functional import LazyObject
+from .django_module_loading import import_string
 
 from PIL import Image
 from easy_thumbnails.conf import settings
@@ -109,7 +108,8 @@ def exif_orientation(im):
         elif orientation == 4:
             im = im.transpose(Image.FLIP_TOP_BOTTOM)
         elif orientation == 5:
-            im = im.transpose(Image.ROTATE_270).transpose(Image.FLIP_LEFT_RIGHT)
+            im = im.transpose(Image.ROTATE_270).transpose(
+                Image.FLIP_LEFT_RIGHT)
         elif orientation == 6:
             im = im.transpose(Image.ROTATE_270)
         elif orientation == 7:
@@ -117,21 +117,3 @@ def exif_orientation(im):
         elif orientation == 8:
             im = im.transpose(Image.ROTATE_90)
     return im
-
-
-def get_modified_time(storage, name):
-    """
-    Get modified time from storage, ensuring the result is a timezone-aware
-    datetime.
-    """
-    try:
-        modified_time = storage.get_modified_time(name)
-    except OSError:
-        return 0
-    except NotImplementedError:
-        return None
-    if modified_time and timezone.is_naive(modified_time):
-        if getattr(settings, 'USE_TZ', False):
-            default_timezone = timezone.get_default_timezone()
-            return timezone.make_aware(modified_time, default_timezone)
-    return modified_time

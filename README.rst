@@ -1,3 +1,6 @@
+In "lite" branch there's a "Lite" version without Django dependencies, SVG support and storage support.
+It is suited to be used inside serverless environments (i.e. AWS Lambda) to resize images on the fly. 
+
 ===============
 Easy Thumbnails
 ===============

@@ -6,7 +6,7 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
 from django.test import TestCase
 from django.utils.deconstruct import deconstructible
-from django.utils.module_loading import import_string
+from module_loading import import_string
 
 from easy_thumbnails.conf import settings
 

@@ -3,7 +3,7 @@ from pathlib import Path
 
 from django.template import Template, Context, TemplateSyntaxError
 from django.core.files import storage as django_storage
-from django.utils.module_loading import import_string
+from module_loading import import_string
 
 from easy_thumbnails import alias, storage
 from easy_thumbnails.conf import settings

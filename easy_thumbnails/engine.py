@@ -1,7 +1,7 @@
 import os
 from io import BytesIO, StringIO
 
-from django.utils.module_loading import import_string
+from .django_module_loading import import_string
 
 from PIL import Image
 
@@ -128,17 +128,3 @@ def generate_source_image(source_file, processor_options, generators=None,
                 pass
     if exceptions and not fail_silently:
         raise NoSourceGenerator(*exceptions)
-
-
-def save_svg_image(image, destination=None, filename=None, **options):
-    """
-    Save a SVG image.
-    """
-    from easy_thumbnails.VIL import Image
-
-    if destination is None:
-        destination = StringIO()
-    image.save(destination, format='SVG', **options)
-    if hasattr(destination, 'seek'):
-        destination.seek(0)
-    return destination

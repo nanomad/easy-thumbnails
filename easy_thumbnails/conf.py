@@ -1,5 +1,9 @@
-import django
-from django.conf import settings as django_settings
+# Load optional local settings
+try:
+    import easy_thumbnails.local_settings as local_settings
+    setattr(local_settings, 'configured', True)
+except ImportError:
+    pass
 
 
 class BaseSettings:
@@ -21,11 +25,13 @@ class AppSettings(BaseSettings):
         self.isolated = isolated
         self._changed = {}
         self._added = []
-        if django_settings.configured:
-            if hasattr(django_settings, 'THUMBNAIL_HIGH_RESOLUTION'):
-                warnings.warn("THUMBNAIL_HIGH_RESOLUTION is unused and now obsolete.", DeprecationWarning)
-            if hasattr(django_settings, 'THUMBNAIL_HIGHRES_INFIX'):
-                warnings.warn("THUMBNAIL_HIGHRES_INFIX is unused and now obsolete.", DeprecationWarning)
+        if getattr(local_settings, 'configured', False):
+            if hasattr(local_settings, 'THUMBNAIL_HIGH_RESOLUTION'):
+                warnings.warn(
+                    "THUMBNAIL_HIGH_RESOLUTION is unused and now obsolete.", DeprecationWarning)
+            if hasattr(local_settings, 'THUMBNAIL_HIGHRES_INFIX'):
+                warnings.warn(
+                    "THUMBNAIL_HIGHRES_INFIX is unused and now obsolete.", DeprecationWarning)
 
     def get_isolated(self):
         return self._isolated
@@ -42,9 +48,9 @@ class AppSettings(BaseSettings):
         Revert any changes made to settings.
         """
         for attr, value in self._changed.items():
-            setattr(django_settings, attr, value)
+            setattr(local_settings, attr, value)
         for attr in self._added:
-            delattr(django_settings, attr)
+            delattr(local_settings, attr)
         self._changed = {}
         self._added = []
         if self.isolated:
@@ -59,7 +65,7 @@ class AppSettings(BaseSettings):
                     pass
             else:
                 try:
-                    return getattr(django_settings, attr)
+                    return getattr(local_settings, attr)
                 except AttributeError:
                     pass
         try:
@@ -67,7 +73,7 @@ class AppSettings(BaseSettings):
         except AttributeError:
             if not self.isolated:
                 raise
-            return getattr(django_settings, attr)
+            return getattr(local_settings, attr)
 
     def __setattr__(self, attr, value):
         if attr == attr.upper():
@@ -85,10 +91,10 @@ class AppSettings(BaseSettings):
             if attr not in self._added:
                 try:
                     self._changed.setdefault(
-                        attr, getattr(django_settings, attr))
+                        attr, getattr(local_settings, attr))
                 except AttributeError:
                     self._added.append(attr)
-            return setattr(django_settings, attr, value)
+            return setattr(local_settings, attr, value)
         return super().__setattr__(attr, value)
 
 
@@ -258,7 +264,6 @@ class Settings(AppSettings):
 
     THUMBNAIL_SOURCE_GENERATORS = (
         'easy_thumbnails.source_generators.pil_image',
-        'easy_thumbnails.source_generators.vil_image',
     )
     """
     The :doc:`source_generators` through which the base image is created from
@@ -321,5 +326,6 @@ class Settings(AppSettings):
     Allows customising Image.save parameters based on format, for example:
     `{'WEBP': {'method': 6}}`
     """
+
 
 settings = Settings()
